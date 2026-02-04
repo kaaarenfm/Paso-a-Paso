@@ -1,0 +1,84 @@
+# Flutter / Mobile .gitignore (consolidado)
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Misc
+*.class
+*.log
+*.pyc
+*.swp
+.history
+.svn/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+/coverage/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# Android specific
+/android/.gradle/
+/android/local.properties
+/android/key.properties
+/android/*.jks
+/android/*.keystore
+**/google-services.json
+/android/**/*.iml
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+
+# iOS specific
+.generated/
+**/GoogleService-Info.plist
+/ios/Pods/
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/Runner/GeneratedPluginRegistrant.*
+/ios/Runner.xcworkspace/
+/ios/Podfile.lock
+
+# macOS / Desktop
+/macos/Flutter/ephemeral/
+
+# Windows
+/windows/flutter/ephemeral/
+
+# Linux
+/linux/flutter/ephemeral/
+
+# Build / symbols / mapping
+app.*.symbols
+app.*.map.json
+
+# Secrets / env files (do not commit)
+.env
+.env.*
+secrets/
+*.pem
+*.p12
+*.key
+*.crt
+
+# Key stores and signing
+*.jks
+*.keystore
+
+# Misc (IDE artifacts)
+*.iml
+*.ipr
+*.iws
+
+# Keep this if you want to track VSCode extensions recommendation file
+!.vscode/extensions.json
