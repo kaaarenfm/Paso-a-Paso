@@ -1,0 +1,61 @@
+name: CI Proyecto Habitos
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+
+  web:
+    name: 🌐 CI Web
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar repo
+        uses: actions/checkout@v4
+
+      - name: 🟢 Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: 📦 Instalar dependencias web
+        run: |
+          cd web
+          npm ci
+
+      - name: 🏗️ Build Web
+        run: |
+          cd web
+          npm run build --if-present
+
+  mobile:
+    name: 📱 CI Mobile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar repo
+        uses: actions/checkout@v4
+
+      - name: 🐦 Instalar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.x"
+
+      - name: 📦 Instalar dependencias mobile
+        run: |
+          cd mobile
+          flutter pub get
+
+      - name: 🔍 Analizar código
+        run: |
+          cd mobile
+          flutter analyze
+
+      - name: 🏗️ Build APK debug
+        run: |
+          cd mobile
+          flutter build apk --debug
