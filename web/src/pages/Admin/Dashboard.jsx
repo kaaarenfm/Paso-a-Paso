@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react"
-import { TrendingUp, TrendingDown } from "lucide-react"
+import { useState } from "react"
 import StatCard from "../../components/admin/dashboard/StatCard"
 import ActivityList from "../../components/admin/dashboard/ActivityList"
 
