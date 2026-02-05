@@ -1,20 +1,20 @@
-import { Routes, Route, Navigate } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 
 import Landing from "./pages/Landing"
-import Login from "./pages/admin/AdminLogin"
-import Registro from "./pages/admin/Register"
+import Login from "./pages/Admin/AdminLogin"
+import Registro from "./pages/Admin/Register"
 
 import AdminLayout from "./layouts/AdminLayout"
-import Dashboard from "./pages/admin/Dashboard"
-import Categories from "./pages/admin/content/Categories"
-import RoutineTypes from "./pages/admin/content/RoutineTypes"
-import Recommendations from "./pages/admin/content/Recommendations"
-import MotivationalPhrases from "./pages/admin/content/MotivationalPhrases"
-import PublicRoutines from "./pages/admin/moderation/PublicRoutines"
-import Comments from "./pages/admin/moderation/Comments"
-import Reports from "./pages/admin/moderation/Reports"  
-import Freemium from "./pages/admin/Freemium"
-import Settings from "./pages/admin/Settings"
+import Dashboard from "./pages/Admin/Dashboard"
+import Categories from "./pages/Admin/content/Categories"
+import RoutineTypes from "./pages/Admin/content/RoutineTypes"
+import Recommendations from "./pages/Admin/content/Recommendations"
+import MotivationalPhrases from "./pages/Admin/content/MotivationalPhrases"
+import PublicRoutines from "./pages/Admin/moderation/PublicRoutines"
+import Comments from "./pages/Admin/moderation/Comments"
+import Reports from "./pages/Admin/moderation/Reports"  
+import Freemium from "./pages/Admin/Freemium"
+import Settings from "./pages/Admin/Settings"
 
 export default function App() {
   return (
