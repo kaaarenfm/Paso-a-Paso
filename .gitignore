@@ -1,0 +1,47 @@
+# ===== GENERAL =====
+.DS_Store
+Thumbs.db
+*.log
+logs/
+
+# ===== ENV =====
+.env
+.env.*
+*.local
+
+# ===== NODE =====
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+.next/
+out/
+
+# ===== FLUTTER =====
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+build/
+ios/Pods/
+android/.gradle/
+android/local.properties
+
+# ===== IDE =====
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# ===== OS =====
+*.swp
+*.swo
+
+# ===== DEPLOY =====
+.vercel/
+.firebase/
+
+# ===== MONOREPO TEMP =====
+tmp/
+temp/

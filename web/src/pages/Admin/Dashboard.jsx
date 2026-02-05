@@ -57,14 +57,10 @@ const ACTIVITY = [
 
 // ─── Dashboard ───────────────────────────────────────────────
 export default function Dashboard() {
-  const [stats, setStats] = useState(null)
-  const [activity, setActivity] = useState([])
 
-  useEffect(() => {
-    // 🔌 luego conectas backend aquí
-    setStats(STATS)
-    setActivity(ACTIVITY)
-  }, [])
+const [stats] = useState(STATS)
+const [activity] = useState(ACTIVITY)
+
 
   if (!stats)
     return (

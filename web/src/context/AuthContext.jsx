@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import { isAuthenticated, login as svcLogin, logout as svcLogout } from '../services/authService';
 
 export const AuthContext = createContext();

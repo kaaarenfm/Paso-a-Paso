@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+coverage
+dev-dist
+.dart_tool
+android
+ios
