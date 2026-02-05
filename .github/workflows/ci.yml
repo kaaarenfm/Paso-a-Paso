@@ -2,60 +2,65 @@ name: CI Proyecto Habitos
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ dev, main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ dev, main ]
 
 jobs:
 
   web:
-    name: 🌐 CI Web
+    name: 🌐 CI Web (React Vite)
     runs-on: ubuntu-latest
 
+    if: contains(github.event.head_commit.message, '') || contains(join(github.event.commits.*.modified, ','), 'web/') || github.event_name == 'pull_request'
+
     steps:
-      - name: 📥 Clonar repo
+      - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      - name: 🟢 Instalar Node
+      - name: 🟢 Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: web/package-lock.json
 
-      - name: 📦 Instalar dependencias web
-        run: |
-          cd web
-          npm ci
+      - name: 📦 Instalar dependencias
+        working-directory: web
+        run: npm ci
 
-      - name: 🏗️ Build Web
-        run: |
-          cd web
-          npm run build --if-present
+      - name: 🔍 Lint
+        working-directory: web
+        run: npm run lint --if-present
+
+      - name: 🏗️ Build
+        working-directory: web
+        run: npm run build
 
   mobile:
-    name: 📱 CI Mobile
+    name: 📱 CI Mobile (Flutter)
     runs-on: ubuntu-latest
 
+    if: contains(github.event.head_commit.message, '') || contains(join(github.event.commits.*.modified, ','), 'mobile/') || github.event_name == 'pull_request'
+
     steps:
-      - name: 📥 Clonar repo
+      - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      - name: 🐦 Instalar Flutter
+      - name: 🐦 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.x"
+          cache: true
 
-      - name: 📦 Instalar dependencias mobile
-        run: |
-          cd mobile
-          flutter pub get
+      - name: 📦 Dependencias Flutter
+        working-directory: mobile
+        run: flutter pub get
 
-      - name: 🔍 Analizar código
-        run: |
-          cd mobile
-          flutter analyze
+      - name: 🔍 Analyze
+        working-directory: mobile
+        run: flutter analyze
 
-      - name: 🏗️ Build APK debug
-        run: |
-          cd mobile
-          flutter build apk --debug
+      - name: 🏗️ Build APK Debug
+        working-directory: mobile
+        run: flutter build apk --debug
