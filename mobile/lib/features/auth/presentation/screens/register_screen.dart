@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/ui/inputs/app_input.dart';
 import '../../../../core/ui/buttons/primary_button.dart';
-import '../../../../core/ui/layout/app_scaffold.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 
