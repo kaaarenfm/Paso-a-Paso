@@ -15,6 +15,7 @@ import '../../features/onboarding/presentation/screens/onboarding_motivation_scr
 import '../../features/onboarding/presentation/screens/onboarding_summary_screen.dart';
 
 import '../../features/contract/presentation/screens/contract_screen.dart';
+import '../../features/home/screens/home_screen.dart';
 
 
 class AppRouter {
@@ -25,6 +26,7 @@ class AppRouter {
   static const forgotPassword = '/forgot-password';
   static const home = '/home';
 
+
   static const onboardingIntro = '/onboarding-intro';
   static const onboardingObjectives = '/onboarding-objectives';
   static const onboardingCategories = '/onboarding-categories';
@@ -34,6 +36,8 @@ class AppRouter {
   static const onboardingSummary = '/onboarding-summary';
 
   static const contract = '/contract';
+
+  static const createRoutine = '/create-routine';
 
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -84,6 +88,11 @@ class AppRouter {
       case contract:
         return MaterialPageRoute(
             builder: (_) => const ContractScreen());
+
+      case home:
+        return MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        );
 
       default:
         return MaterialPageRoute(

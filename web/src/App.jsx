@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 
 import Landing from "./pages/Landing"
 import Login from "./pages/Admin/AdminLogin"
@@ -24,8 +24,9 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Registro />} />
 
-      {/* Admin */}
       <Route path="/admin" element={<AdminLayout />}>
+        <Route path="*" element={<Navigate to="dashboard" />} />
+
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="content/categories" element={<Categories />} />
         <Route path="content/types" element={<RoutineTypes />} />
@@ -36,7 +37,6 @@ export default function App() {
         <Route path="moderation/reports" element={<Reports />} />
         <Route path="freemium" element={<Freemium />} />
         <Route path="settings" element={<Settings />} />
-
       </Route>
     </Routes>
   )
