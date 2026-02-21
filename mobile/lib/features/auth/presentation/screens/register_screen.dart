@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/ui/inputs/app_input.dart';
 import '../../../../core/ui/buttons/primary_button.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/state/app_state.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -107,6 +109,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     }
 
+    _showError(message);
+  }
+
+  void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -119,11 +125,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _submitRegistration() {
-    Navigator.pushReplacementNamed(
-      context,
-      AppRouter.onboardingIntro,
-    );
+  Future<void> _submitRegistration() async {
+    final appState = context.read<AppState>();
+    
+    try {
+      await appState.register(
+        nombre: _nombreController.text,
+        apellidoPaterno: _apellidoPaternoController.text,
+        apellidoMaterno: _apellidoMaternoController.text,
+        email: _correoController.text,
+        password: _contrasenaController.text,
+      );
+      
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          AppRouter.onboardingIntro,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showError(e.toString().replaceAll('Exception: ', ''));
+      }
+    }
   }
 
   @override
@@ -229,6 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildStepPersonalInfo() {
+    final appState = context.watch<AppState>();
     return Column(
       key: const ValueKey(0),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,6 +281,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           controller: _nombreController,
           prefixIcon: Icons.person_outline,
           hint: "Ej: Juan Carlos",
+          enabled: !appState.isLoading,
         ),
         const SizedBox(height: AppSpacing.sm),
         AppInput(
@@ -263,6 +289,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           controller: _apellidoPaternoController,
           prefixIcon: Icons.badge_outlined,
           hint: "Ej: García",
+          enabled: !appState.isLoading,
         ),
         const SizedBox(height: AppSpacing.sm),
         AppInput(
@@ -270,12 +297,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           controller: _apellidoMaternoController,
           prefixIcon: Icons.badge_outlined,
           hint: "Ej: López",
+          enabled: !appState.isLoading,
         ),
       ],
     );
   }
 
   Widget _buildStepEmail() {
+    final appState = context.watch<AppState>();
     return Column(
       key: const ValueKey(1),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,12 +333,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           keyboardType: TextInputType.emailAddress,
           prefixIcon: Icons.email_outlined,
           hint: "ejemplo@correo.com",
+          enabled: !appState.isLoading,
         ),
       ],
     );
   }
 
   Widget _buildStepPassword() {
+    final appState = context.watch<AppState>();
     return Column(
       key: const ValueKey(2),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,6 +369,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           obscure: true,
           prefixIcon: Icons.lock_outlined,
           hint: "Mínimo 6 caracteres",
+          enabled: !appState.isLoading,
         ),
         const SizedBox(height: AppSpacing.sm),
         AppInput(
@@ -346,6 +378,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           obscure: true,
           prefixIcon: Icons.lock_outlined,
           hint: "Ingresa la misma contraseña",
+          enabled: !appState.isLoading,
         ),
       ],
     );
@@ -416,53 +449,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                     vertical: AppSpacing.sm,
+                    ),
                   ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+  
+    Widget _buildNavigationButtons() {
+      final appState = context.watch<AppState>();
+      return Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Row(
+            children: [
+              if (_currentStep > 0)
+                Expanded(
+                  child: PrimaryButton(
+                    text: "Atrás",
+                    onPressed: appState.isLoading ? null : () => _previousStep(),
+                    outlined: true,
+                  ),
+                ),
+              if (_currentStep > 0) const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                flex: _currentStep == 0 ? 1 : 1,
+                child: PrimaryButton(
+                  text: appState.isLoading 
+                      ? "Cargando..." 
+                      : (_currentStep == 3 ? "Finalizar" : "Continuar"),
+                  onPressed: appState.isLoading ? null : () => _nextStep(),
+                  icon: appState.isLoading 
+                      ? null 
+                      : (_currentStep == 3 ? Icons.check : Icons.arrow_forward),
                 ),
               ),
             ],
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildNavigationButtons() {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            if (_currentStep > 0)
-              Expanded(
-                child: PrimaryButton(
-                  text: "Atrás",
-                  onPressed: _previousStep,
-                  outlined: true,
-                ),
-              ),
-            if (_currentStep > 0) const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              flex: _currentStep == 0 ? 1 : 1,
-              child: PrimaryButton(
-                text: _currentStep == 3 ? "Finalizar" : "Continuar",
-                onPressed: _nextStep,
-                icon: _currentStep == 3 ? Icons.check : Icons.arrow_forward,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+      );
+    }
 }

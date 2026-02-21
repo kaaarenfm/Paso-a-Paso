@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/ui/cards/app_card.dart';
 
 class _Routine {
@@ -28,13 +29,6 @@ const _mockRoutines = [
     totalHabits: 4,
     completedHabits: 2,
   ),
-  _Routine(
-    emoji: "🌙",
-    title: "Rutina nocturna",
-    time: "9:00 pm",
-    totalHabits: 3,
-    completedHabits: 0,
-  ),
 ];
 
 class HomeRoutinesList extends StatelessWidget {
@@ -57,16 +51,26 @@ class HomeRoutinesList extends StatelessWidget {
                 color: AppTheme.dark,
               ),
             ),
-            GestureDetector(
-              onTap: () => Navigator.pushNamed(context, "/routines"),
-              child: Text(
-                "Ver todas",
-                style: TextStyle(
-                  fontSize: 13,
-                  color: AppTheme.greenDark,
-                  fontWeight: FontWeight.w600,
+            Row(
+              children: [
+                GestureDetector(
+                onTap: () => Navigator.pushNamed(context, "/routines"),
+                child: Text(
+                  "Ver todas",
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppTheme.greenDark,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
+              const SizedBox(width: 12),
+              IconButton(
+                onPressed: () => Navigator.pushNamed(context, AppRouter.routineMoment),
+                icon: const Icon(Icons.add_circle, color: AppTheme.greenDark),
+                tooltip: "Nueva Rutina",
+              ),
+              ],
             ),
           ],
         ),
@@ -85,9 +89,14 @@ class HomeRoutinesList extends StatelessWidget {
             final progress = routine.completedHabits / routine.totalHabits;
             final isDone = progress == 1.0;
 
-            return AppCard(
-              child: Row(
-                children: [
+            return GestureDetector(
+              onTap: () {
+                // Navegar al detalle de hábitos (o lista de hábitos de la rutina)
+                Navigator.pushNamed(context, AppRouter.habitDetail);
+              },
+              child: AppCard(
+                child: Row(
+                  children: [
                   /// Emoji
                   Container(
                     width: 50,
@@ -191,9 +200,41 @@ class HomeRoutinesList extends StatelessWidget {
                       ],
                     ),
                   ),
+                  IconButton(
+                    icon: const Icon(Icons.share, size: 20, color: AppTheme.grayCustom),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          title: const Text("Compartir rutina"),
+                          content: const Text("¿Quieres publicar esta rutina en la comunidad para inspirar a otros?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("Cancelar", style: TextStyle(color: AppTheme.grayCustom)),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("¡Rutina compartida en la comunidad! 🌏"),
+                                    backgroundColor: AppTheme.greenDark,
+                                  ),
+                                );
+                              },
+                              child: const Text("Compartir", style: TextStyle(color: AppTheme.greenDark, fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
-            );
+            ),
+          );
           },
         ),
       ],

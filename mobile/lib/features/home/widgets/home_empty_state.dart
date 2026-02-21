@@ -63,7 +63,7 @@ class HomeEmptyState extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              onPressed: () => Navigator.pushNamed(context, AppRouter.createRoutine),
+              onPressed: () => Navigator.pushNamed(context, AppRouter.routineMoment),
               icon: const Icon(Icons.add_rounded, size: 20),
               label: const Text(
                 "Crear primera rutina",

@@ -1,12 +1,17 @@
 import { TrendingUp, TrendingDown } from "lucide-react"
 
-export default function StatCard({ title, value, change, positive, bg, headerBg, icon }) {
+export default function StatCard({ title, value, change, positive, bg, headerBg, icon: Icon, onClick }) {
   return (
-    <div className={`${bg} rounded-2xl shadow-sm overflow-hidden border border-gray-100`}>
+    <div
+      onClick={onClick}
+      className={`${bg} rounded-2xl shadow-sm overflow-hidden border border-gray-100 cursor-pointer hover:scale-[1.02] transition-transform duration-300 active:scale-95`}
+    >
       {/* Header colorido */}
       <div className={`${headerBg} px-4 py-2 flex items-center justify-between`}>
         <span className="text-xs font-semibold text-white uppercase tracking-widest">{title}</span>
-        <span className="text-base">{icon}</span>
+        <span className="text-white">
+          {typeof Icon === 'function' || typeof Icon === 'object' ? <Icon size={20} /> : null}
+        </span>
       </div>
 
       {/* Cuerpo */}
@@ -19,11 +24,10 @@ export default function StatCard({ title, value, change, positive, bg, headerBg,
 
         {/* Badge de cambio */}
         <div
-          className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full ${
-            positive
-              ? "bg-[var(--color-green-light)] text-[var(--color-green-dark)]"
-              : "bg-[var(--color-red-light)] text-[var(--color-red-dark)]"
-          }`}
+          className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full ${positive
+            ? "bg-[var(--color-green-light)] text-[var(--color-green-dark)]"
+            : "bg-[var(--color-red-light)] text-[var(--color-red-dark)]"
+            }`}
         >
           {positive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
           {positive ? "+" : "-"}{change}%

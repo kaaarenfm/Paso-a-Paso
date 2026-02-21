@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/router/app_router.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -63,7 +64,7 @@ class HomeHeader extends StatelessWidget {
         _HeaderIconButton(
           icon: Icons.notifications_outlined,
           badge: true,
-          onTap: () {},
+          onTap: () => Navigator.pushNamed(context, AppRouter.notifications),
         ),
 
         const SizedBox(width: AppSpacing.xs),

@@ -223,7 +223,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         onPressed: () {
                           Navigator.pushReplacementNamed(
                             context,
-                            AppRouter.home,
+                            AppRouter.mainContainer,
                           );
                         },
                         style: TextButton.styleFrom(

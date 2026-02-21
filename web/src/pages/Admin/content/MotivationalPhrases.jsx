@@ -1,22 +1,55 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { animate, stagger } from "animejs"
 import { MessageCircle, Trash2 } from "lucide-react"
 import PhraseForm from "../../../components/admin/content/PhraseForm"
 
 const INITIAL_PHRASES = [
-  { id: 1, text: "Un paso a la vez también es progreso",      active: true },
-  { id: 2, text: "No pasa nada si hoy no fue perfecto",      active: true },
+  { id: 1, text: "Un paso a la vez también es progreso", active: true },
   { id: 3, text: "Tu constancia vale más que la perfección", active: false },
-  { id: 4, text: "Cada día es una nueva oportunidad",        active: true },
 ]
 
 export default function MotivationalPhrases() {
   const [phrases, setPhrases] = useState(INITIAL_PHRASES)
   const [confirmId, setConfirmId] = useState(null)
   const [toast, setToast] = useState({ show: false, text: "", type: "success" })
+  const headerRef = useRef(null)
+  const badgesRef = useRef(null)
+  const listRef = useRef(null)
+  const toastRef = useRef(null)
+
+  useEffect(() => {
+
+    animate(headerRef.current, {
+      translateY: [-20, 0],
+      opacity: [0, 1],
+      duration: 500,
+      easing: "ease-out",
+    })
+
+    animate(badgesRef.current?.children, {
+      scale: [0.8, 1],
+      opacity: [0, 1],
+      delay: stagger(120),
+    })
+
+    animate(listRef.current?.children, {
+      translateY: [20, 0],
+      opacity: [0, 1],
+      delay: stagger(80),
+    })
+
+  }, [])
+
 
   const showToast = (text, type = "success") => {
-    setToast({ show: true, text, type })
-    setTimeout(() => setToast({ show: false, text: "", type: "success" }), 2500)
+    setTimeout(() => {
+      animate(toastRef.current, {
+        scale: [0.8, 1],
+        opacity: [0, 1],
+        duration: 300,
+        easing: "ease-out",
+      })
+    }, 50)
   }
 
   const addPhrase = (text) => {
@@ -39,9 +72,9 @@ export default function MotivationalPhrases() {
   const activeCount = phrases.filter((p) => p.active).length
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5">
+    <div className="mx-auto space-y-5">
       {/* Toast */}
-      <div
+      <div ref={toastRef}
         className={`
           fixed top-5 right-5 z-50 flex items-center gap-2
           text-xs font-semibold px-5 py-2.5 rounded-lg shadow-lg text-white
@@ -55,11 +88,11 @@ export default function MotivationalPhrases() {
       </div>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div ref={headerRef} className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[var(--color-green-light)] flex items-center justify-center">
-              <MessageCircle size={16} className="text-[var(--color-green-dark)]" />
+            <div className="w-8 h-8 rounded-xl bg-[var(--color-blue-light)] flex items-center justify-center">
+              <MessageCircle size={16} className="text-[var(--color-blue-dark)]" />
             </div>
             <h2 className="text-xl font-bold text-[var(--color-dark)] tracking-tight">
               Frases motivacionales
@@ -70,7 +103,7 @@ export default function MotivationalPhrases() {
           </p>
         </div>
         {/* Badges */}
-        <div className="flex items-center gap-2">
+        <div ref={badgesRef} className="flex items-center gap-2">
           <span className="text-xs font-semibold text-[var(--color-green-dark)] bg-[var(--color-green-light)] px-3 py-1 rounded-full">
             {activeCount} activas
           </span>
@@ -84,7 +117,7 @@ export default function MotivationalPhrases() {
       <PhraseForm onAdd={addPhrase} />
 
       {/* Lista de frases */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div ref={listRef} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="bg-[var(--color-green-light)] border-b border-[var(--color-green-dark)] px-5 py-3 flex items-center justify-between">
           <h3 className="text-xs font-semibold text-[var(--color-green-dark)] uppercase tracking-widest">
             Frases actuales
@@ -108,33 +141,29 @@ export default function MotivationalPhrases() {
               return (
                 <div
                   key={phrase.id}
-                  className={`px-5 py-4 transition-colors duration-200 ${
-                    isConfirming ? "bg-[var(--color-red-light)]" : "hover:bg-[var(--color-neutral-bg)]"
-                  }`}
+                  className={`px-5 py-4 transition-colors duration-200 ${isConfirming ? "bg-[var(--color-red-light)]" : "hover:bg-[var(--color-neutral-bg)]"
+                    }`}
                 >
                   {/* Texto + badge estado */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                       {/* Comillas decorativas */}
-                      <span className={`text-lg font-bold leading-none mt-0.5 flex-shrink-0 ${
-                        phrase.active ? "text-[var(--color-green-dark)]" : "text-gray-300"
-                      }`}>
+                      <span className={`text-lg font-bold leading-none mt-0.5 flex-shrink-0 ${phrase.active ? "text-[var(--color-green-dark)]" : "text-gray-300"
+                        }`}>
                         ❝
                       </span>
-                      <p className={`text-sm leading-relaxed ${
-                        phrase.active ? "text-[var(--color-dark)]" : "text-[var(--color-gray-custom)] italic"
-                      }`}>
+                      <p className={`text-sm leading-relaxed ${phrase.active ? "text-[var(--color-dark)]" : "text-[var(--color-gray-custom)] italic"
+                        }`}>
                         {phrase.text}
                       </p>
                     </div>
 
                     {/* Badge activa/inactiva */}
                     <span
-                      className={`flex-shrink-0 text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                        phrase.active
-                          ? "bg-[var(--color-green-light)] text-[var(--color-green-dark)]"
-                          : "bg-[var(--color-neutral-bg)] text-[var(--color-gray-custom)]"
-                      }`}
+                      className={`flex-shrink-0 text-xs font-semibold px-2.5 py-0.5 rounded-full ${phrase.active
+                        ? "bg-[var(--color-green-light)] text-[var(--color-green-dark)]"
+                        : "bg-[var(--color-neutral-bg)] text-[var(--color-gray-custom)]"
+                        }`}
                     >
                       {phrase.active ? "Activa" : "Inactiva"}
                     </span>
@@ -147,14 +176,12 @@ export default function MotivationalPhrases() {
                         {/* Toggle activa/inactiva */}
                         <button
                           onClick={() => togglePhrase(phrase.id)}
-                          className={`relative w-10 h-5 rounded-full transition-colors duration-300 ease-out focus:outline-none ${
-                            phrase.active ? "bg-[var(--color-green-dark)]" : "bg-gray-300"
-                          }`}
+                          className={`relative w-10 h-5 rounded-full transition-colors duration-300 ease-out focus:outline-none ${phrase.active ? "bg-[var(--color-green-dark)]" : "bg-gray-300"
+                            }`}
                         >
                           <span
-                            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ease-out ${
-                              phrase.active ? "translate-x-5" : "translate-x-0"
-                            }`}
+                            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ease-out ${phrase.active ? "translate-x-5" : "translate-x-0"
+                              }`}
                           />
                         </button>
 

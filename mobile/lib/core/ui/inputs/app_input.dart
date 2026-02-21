@@ -10,6 +10,7 @@ class AppInput extends StatefulWidget {
   final String? Function(String?)? validator;
   final int? maxLines;
   final String? hint;
+  final bool enabled;
 
   const AppInput({
     super.key,
@@ -21,6 +22,7 @@ class AppInput extends StatefulWidget {
     this.validator,
     this.maxLines = 1,
     this.hint,
+    this.enabled = true,
   });
 
   @override
@@ -58,6 +60,7 @@ class _AppInputState extends State<AppInput> {
             });
           },
           child: TextFormField(
+            enabled: widget.enabled,
             controller: widget.controller,
             obscureText: widget.obscure && _isObscured,
             keyboardType: widget.keyboardType,

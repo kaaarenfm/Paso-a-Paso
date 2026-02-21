@@ -34,6 +34,19 @@ API Backend para **Step by Step**, una plataforma de acompañamiento emocional p
     },
 )
 
+# Configuración de CORS
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.middleware("http")
 async def trial_restriction_middleware(request: Request, call_next):
     path = request.url.path

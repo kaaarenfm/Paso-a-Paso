@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Heart, Mail, Lock, User, Check, ArrowLeft, Eye, EyeOff, Upload, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Heart, Mail, Lock, User, Check, ArrowLeft, Eye, EyeOff, Upload, ArrowRight, CheckCircle2, Loader2, Phone } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const RegistroPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { register } = useAuth();
   const plan = searchParams.get('plan');
   const isPremium = plan === 'premium';
-  
+
   const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const [formData, setFormData] = useState({
     nombre: '',
     apellido_paterno: '',
@@ -19,14 +24,15 @@ const RegistroPage = () => {
     contrasena: '',
     confirmar_contrasena: '',
     foto_perfil: null,
-    acceptTerms: false
+    acceptTerms: false,
+    telefono: '', // Added as API might expect it
   });
 
   const [errors, setErrors] = useState({});
 
   const validateStep1 = () => {
     const newErrors = {};
-    
+
     if (!formData.nombre.trim()) {
       newErrors.nombre = 'El nombre es requerido';
     }
@@ -38,28 +44,28 @@ const RegistroPage = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.correo)) {
       newErrors.correo = 'El correo no es válido';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateStep2 = () => {
     const newErrors = {};
-    
+
     if (!formData.contrasena) {
       newErrors.contrasena = 'La contraseña es requerida';
     } else if (formData.contrasena.length < 8) {
       newErrors.contrasena = 'Mínimo 8 caracteres';
     }
-    
+
     if (formData.contrasena !== formData.confirmar_contrasena) {
       newErrors.confirmar_contrasena = 'Las contraseñas no coinciden';
     }
-    
+
     if (!formData.acceptTerms) {
       newErrors.acceptTerms = 'Debes aceptar los términos y condiciones';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -75,25 +81,30 @@ const RegistroPage = () => {
     setErrors({});
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateStep2()) {
+      setIsLoading(true);
+      setError('');
+
       const registroData = {
         nombre: formData.nombre,
         apellido_paterno: formData.apellido_paterno,
-        apellido_materno: formData.apellido_materno,
-        correo: formData.correo,
+        apellido_materno: formData.apellido_materno || '',
+        correo_electronico: formData.correo,
         contrasena: formData.contrasena,
-        foto_perfil: formData.foto_perfil,
-        id_plan: isPremium ? 2 : 1,
-        fecha_registro: new Date().toISOString(),
-        fecha_inicio_plan: new Date().toISOString(),
-        fecha_fin_plan: isPremium ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() : null,
-        estado: 'activo'
+        telefono: formData.telefono || '0000000000', // Default if required by backend but not in UI
       };
-      console.log('Registro data:', registroData);
-      // Aquí irá la lógica de registro
+
+      try {
+        await register(registroData);
+        navigate('/admin/dashboard');
+      } catch (err) {
+        setError(err.message || 'Error al registrarse. Intenta de nuevo.');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -110,6 +121,7 @@ const RegistroPage = () => {
         [name]: ''
       });
     }
+    if (error) setError('');
   };
 
   const handleImageChange = (e) => {
@@ -130,7 +142,7 @@ const RegistroPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-light/30 to-blue-light/30 relative">
       {/* Botón volver */}
-      <button 
+      <button
         onClick={() => navigate('/')}
         className="absolute top-6 left-6 flex items-center space-x-2 text-dark hover:text-green-dark transition-colors group z-10"
       >
@@ -151,7 +163,7 @@ const RegistroPage = () => {
                 <p className="text-blue-light text-lg leading-relaxed">
                   Únete a miles de personas que ya están construyendo hábitos saludables con Paso a Paso.
                 </p>
-                
+
                 <div className="space-y-4 pt-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-green-light/30 rounded-lg flex items-center justify-center">
@@ -162,7 +174,7 @@ const RegistroPage = () => {
                       <p className="text-sm text-blue-light">Personaliza según tus metas</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-yellow-light/30 rounded-lg flex items-center justify-center">
                       <span className="text-2xl">📅</span>
@@ -172,7 +184,7 @@ const RegistroPage = () => {
                       <p className="text-sm text-blue-light">Organiza tu tiempo fácilmente</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-red-light/30 rounded-lg flex items-center justify-center">
                       <span className="text-2xl">🚀</span>
@@ -234,6 +246,12 @@ const RegistroPage = () => {
                 <p className="text-sm text-green-light">
                   Disfruta de todas las funciones premium por 14 días. Sin tarjeta de crédito.
                 </p>
+              </div>
+            )}
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-4">
+                {error}
               </div>
             )}
 
@@ -316,6 +334,24 @@ const RegistroPage = () => {
                     {errors.correo && <p className="text-red-dark text-xs mt-1">{errors.correo}</p>}
                   </div>
 
+                  <div>
+                    <label htmlFor="telefono" className="block text-sm font-medium text-dark mb-2">
+                      Teléfono <span className="text-red-dark">*</span>
+                    </label>
+                    <div className="relative">
+                      <Phone className="w-5 h-5 text-gray-custom absolute left-3 top-1/2 transform -translate-y-1/2" />
+                      <input
+                        id="telefono"
+                        name="telefono"
+                        type="text"
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        placeholder="1234567890"
+                        className={`w-full pl-12 pr-4 py-3 border-2 ${errors.telefono ? 'border-red-dark' : 'border-gray-200'} rounded-lg focus:border-green-dark focus:outline-none transition-colors`}
+                      />
+                    </div>
+                    {errors.telefono && <p className="text-red-dark text-xs mt-1">{errors.telefono}</p>}
+                  </div>
                   <button
                     type="button"
                     onClick={handleNextStep}
@@ -435,9 +471,17 @@ const RegistroPage = () => {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 bg-green-dark text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl"
+                      disabled={isLoading}
+                      className="flex-1 bg-green-dark text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      {isPremium ? 'Comenzar prueba gratis' : 'Crear cuenta'}
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                          Procesando...
+                        </>
+                      ) : (
+                        isPremium ? 'Comenzar prueba gratis' : 'Crear cuenta'
+                      )}
                     </button>
                   </div>
                 </div>

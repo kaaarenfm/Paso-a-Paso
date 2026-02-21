@@ -18,10 +18,9 @@ const menuItems = [
     label: "Gestión de contenido",
     icon: FolderOpen,
     children: [
-      { label: "Categorías",      to: "/admin/content/categories" },
-      { label: "Tipos de rutina", to: "/admin/content/types" },
-      { label: "Frases",          to: "/admin/content/phrases" },
-      { label: "Recomendaciones",to: "/admin/content/recommendations" },
+      { label: "Categorías", to: "/admin/content/categories" },
+      { label: "Frases", to: "/admin/content/phrases" },
+      { label: "Recomendaciones", to: "/admin/content/recommendations" },
     ],
   },
   {
@@ -30,12 +29,10 @@ const menuItems = [
     icon: ShieldCheck,
     children: [
       { label: "Rutinas públicas", to: "/admin/moderation/routines" },
-      { label: "Comentarios",     to: "/admin/moderation/comments" },
-      { label: "Reportes",        to: "/admin/moderation/reports" },
     ],
   },
-  { key: "freemium",  label: "Freemium",      icon: Gem,      to: "/admin/freemium" },
-  { key: "settings",  label: "Configuración", icon: Settings,  to: "/admin/settings" },
+  { key: "freemium", label: "Freemium", icon: Gem, to: "/admin/freemium" },
+  { key: "settings", label: "Configuración", icon: Settings, to: "/admin/settings" },
 ]
 
 function SubItem({ to, label }) {
@@ -65,17 +62,15 @@ export default function Sidebar({ collapsed, onCollapse }) {
 
   return (
     <aside
-      className={`relative bg-white border-r border-gray-200 flex flex-col shadow-sm transition-all duration-300 ease-out ${
-        collapsed ? "w-18" : "w-64"
-      }`}
+      className={`relative bg-white border-r border-gray-200 flex flex-col shadow-sm transition-all duration-300 ease-out ${collapsed ? "w-18" : "w-64"
+        }`}
       style={{ height: "100vh", minHeight: 0 }}
     >
       {/* Logo */}
       <div className="flex items-center justify-between px-4 pt-5 pb-4 flex-shrink-0">
         <div
-          className={`flex items-center gap-2.5 overflow-hidden transition-all duration-300 ${
-            collapsed ? "w-0 opacity-0" : "w-full opacity-100"
-          }`}
+          className={`flex items-center gap-2.5 overflow-hidden transition-all duration-300 ${collapsed ? "w-0 opacity-0" : "w-full opacity-100"
+            }`}
         >
           <div className="w-7 h-7 rounded-lg bg-[var(--color-green-dark)] flex items-center justify-center flex-shrink-0">
             <span className="text-white text-xs font-bold">P</span>

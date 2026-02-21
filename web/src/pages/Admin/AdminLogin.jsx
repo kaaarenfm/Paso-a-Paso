@@ -1,19 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Heart, Mail, Lock, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const [formData, setFormData] = useState({
     correo: '',
     contrasena: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí irá la lógica de autenticación
-    console.log('Login data:', formData);
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await login(formData.correo, formData.contrasena);
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setError(err.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -21,12 +35,14 @@ const LoginPage = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Limpiar error al escribir
+    if (error) setError('');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-light/30 to-blue-light/30 relative">
       {/* Botón volver */}
-      <button 
+      <button
         onClick={() => navigate('/')}
         className="absolute top-6 left-6 flex items-center space-x-2 text-dark hover:text-green-dark transition-colors group z-10"
       >
@@ -47,7 +63,7 @@ const LoginPage = () => {
                 <p className="text-green-light text-lg leading-relaxed">
                   Continúa construyendo tus hábitos saludables y alcanzando tus metas, un paso a la vez.
                 </p>
-                
+
                 <div className="space-y-4 pt-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-green-light/30 rounded-lg flex items-center justify-center">
@@ -58,7 +74,7 @@ const LoginPage = () => {
                       <p className="text-sm text-green-light">Ve tus estadísticas y logros</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-light/30 rounded-lg flex items-center justify-center">
                       <span className="text-2xl">✅</span>
@@ -68,7 +84,7 @@ const LoginPage = () => {
                       <p className="text-sm text-green-light">Mantén tu racha activa</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-yellow-light/30 rounded-lg flex items-center justify-center">
                       <span className="text-2xl">👥</span>
@@ -93,6 +109,13 @@ const LoginPage = () => {
               <h2 className="text-2xl font-bold text-dark">Bienvenido de nuevo</h2>
               <p className="text-gray-custom mt-2">Inicia sesión para continuar tu progreso</p>
             </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-6 flex items-start">
+                <span className="mr-2">⚠️</span>
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -158,9 +181,17 @@ const LoginPage = () => {
 
               <button
                 type="submit"
-                className="w-full bg-green-dark text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl"
+                disabled={isLoading}
+                className="w-full bg-green-dark text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Iniciar sesión
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                    Iniciando sesión...
+                  </>
+                ) : (
+                  'Iniciar sesión'
+                )}
               </button>
             </form>
 

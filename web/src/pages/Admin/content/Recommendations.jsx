@@ -1,14 +1,48 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { animate } from "animejs"
 import { Sparkles, User } from "lucide-react"
 import RecommendationEditor from "../../../components/admin/content/RecommendationEditor"
 
 export default function Recommendations() {
   const [mode, setMode] = useState("manual")
+  const headerRef = useRef(null)
+  const modesRef = useRef(null)
+  const contentRef = useRef(null)
+
+  useEffect(() => {
+
+    animate(headerRef.current, {
+      translateY: [-20, 0],
+      opacity: [0, 1],
+      duration: 500,
+      easing: "ease-out",
+    })
+
+    animate(modesRef.current?.children, {
+      scale: [0.9, 1],
+      opacity: [0, 1],
+      delay: 150,
+      duration: 400,
+    })
+
+  }, [])
+
+  useEffect(() => {
+
+    animate(contentRef.current, {
+      opacity: [0, 1],
+      translateY: [15, 0],
+      duration: 400,
+      easing: "ease-out",
+    })
+
+  }, [mode])
+
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5">
+    <div className="mx-auto space-y-5">
       {/* Header */}
-      <div>
+      <div ref={headerRef}>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-[var(--color-red-light)] flex items-center justify-center">
             <Sparkles size={16} className="text-[var(--color-red-dark)]" />
@@ -33,7 +67,7 @@ export default function Recommendations() {
 
         <div className="p-5 space-y-5">
           {/* Selector de modo — dos cards clickables */}
-          <div className="grid grid-cols-2 gap-3">
+          <div ref={modesRef} className="grid grid-cols-2 gap-3">
             {/* Manual */}
             <button
               onClick={() => setMode("manual")}
@@ -52,9 +86,8 @@ export default function Recommendations() {
                   Activo
                 </span>
               )}
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                mode === "manual" ? "bg-white" : "bg-[var(--color-neutral-bg)]"
-              }`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${mode === "manual" ? "bg-white" : "bg-[var(--color-neutral-bg)]"
+                }`}>
                 <User size={16} className={mode === "manual" ? "text-[var(--color-blue-dark)]" : "text-[var(--color-gray-custom)]"} />
               </div>
               <p className={`text-sm font-semibold ${mode === "manual" ? "text-[var(--color-blue-dark)]" : "text-[var(--color-dark)]"}`}>
@@ -82,9 +115,8 @@ export default function Recommendations() {
                   Activo
                 </span>
               )}
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                mode === "ia" ? "bg-white" : "bg-[var(--color-neutral-bg)]"
-              }`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${mode === "ia" ? "bg-white" : "bg-[var(--color-neutral-bg)]"
+                }`}>
                 <Sparkles size={16} className={mode === "ia" ? "text-[var(--color-red-dark)]" : "text-[var(--color-gray-custom)]"} />
               </div>
               <p className={`text-sm font-semibold ${mode === "ia" ? "text-[var(--color-red-dark)]" : "text-[var(--color-dark)]"}`}>
@@ -97,7 +129,7 @@ export default function Recommendations() {
           </div>
 
           {/* Contenido según modo */}
-          <div className={`rounded-xl border overflow-hidden transition-all duration-300`}>
+          <div ref={contentRef} className={`rounded-xl border overflow-hidden transition-all duration-300`}>
             {mode === "manual" ? (
               <RecommendationEditor />
             ) : (

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/ui/layout/app_bottom_nav.dart';
-import '../models/home_state.dart';
+import '../../../../core/state/app_state.dart';
+
 import '../widgets/home_empty_state.dart';
 import '../widgets/home_routines_list.dart';
 import '../widgets/home_header.dart';
@@ -18,36 +20,29 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
+
   late AnimationController _fadeController;
   late Animation<double> _fadeAnim;
-
-  int _navIndex = 0;
-
-  static const _routes = [
-    null,          // Home (index 0, no navega)
-    "/calendar",
-    "/progress",
-    "/community",
-    "/profile",
-  ];
-
-  /// 🔥 temporal — luego vendrá del backend/local storage
-  static const state = HomeState(
-    hasRoutines: false,
-    onboardingCompleted: false,
-    contractSigned: false,
-  );
 
   @override
   void initState() {
     super.initState();
+
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
+
+    _fadeAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(
+      CurvedAnimation(
+        parent: _fadeController,
+        curve: Curves.easeOut,
+      ),
     );
+
     _fadeController.forward();
   }
 
@@ -57,19 +52,14 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  void _onNavTap(int index) {
-    if (index == 0) {
-      setState(() => _navIndex = 0);
-      return;
-    }
-    final route = _routes[index];
-    if (route != null) Navigator.pushNamed(context, route);
-  }
-
   @override
   Widget build(BuildContext context) {
+
+    final appState = context.watch<AppState>();
+
     return Scaffold(
       backgroundColor: AppTheme.neutralBg,
+
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -81,40 +71,17 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: AppSpacing.sm),
-
-                /// Saludo + avatar
                 const HomeHeader(),
-
-                const SizedBox(height: AppSpacing.md),
-
-                /// Mascota acompañante
                 const HomePetCompanion(),
-
-                const SizedBox(height: AppSpacing.md),
-
-                /// Rutinas o empty state
-                if (!state.hasRoutines)
+                if (!appState.routine.hasRoutines)
                   const HomeEmptyState()
                 else
                   const HomeRoutinesList(),
-
-                const SizedBox(height: AppSpacing.md),
-
-                /// Frase del día
                 const HomeQuoteCard(),
-
-                const SizedBox(height: AppSpacing.lg),
               ],
             ),
           ),
         ),
-      ),
-
-      /// Barra de navegación inferior
-      bottomNavigationBar: AppBottomNav(
-        currentIndex: _navIndex,
-        onTap: _onNavTap,
       ),
     );
   }

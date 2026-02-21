@@ -62,7 +62,7 @@ class _ContractScreenState extends State<ContractScreen>
         });
         Future.delayed(const Duration(milliseconds: 1200), () {
           if (mounted) {
-            Navigator.pushReplacementNamed(context, AppRouter.home);
+            Navigator.pushReplacementNamed(context, AppRouter.mainContainer);
           }
         });
       }
@@ -260,7 +260,7 @@ class _ContractScreenState extends State<ContractScreen>
               if (!_signed)
                 TextButton(
                   onPressed: () =>
-                      Navigator.pushReplacementNamed(context, AppRouter.home),
+                      Navigator.pushReplacementNamed(context, AppRouter.mainContainer),
                   style: TextButton.styleFrom(
                     foregroundColor: AppTheme.grayCustom,
                   ),

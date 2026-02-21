@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/ui/inputs/app_input.dart';
 import '../../../../core/ui/buttons/primary_button.dart';
 import '../../../../core/ui/layout/app_scaffold.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/state/app_state.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -58,8 +60,46 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
+  Future<void> _handleLogin() async {
+    final appState = context.read<AppState>();
+    
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      _showError("Por favor completa todos los campos");
+      return;
+    }
+
+    try {
+      await appState.login(_emailController.text, _passwordController.text);
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          appState.user.onboardingCompleted 
+              ? AppRouter.mainContainer 
+              : AppRouter.onboardingIntro,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showError(e.toString().replaceAll('Exception: ', ''));
+      }
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppTheme.redDark,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return AppScaffold(
       title: "Iniciar Sesión",
       child: SingleChildScrollView(
@@ -98,6 +138,7 @@ class _LoginScreenState extends State<LoginScreen>
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email_outlined,
+                  enabled: !appState.isLoading,
                 ),
 
                 const SizedBox(height: AppSpacing.sm),
@@ -108,19 +149,15 @@ class _LoginScreenState extends State<LoginScreen>
                   controller: _passwordController,
                   obscure: true,
                   prefixIcon: Icons.lock_outlined,
+                  enabled: !appState.isLoading,
                 ),
 
                 const SizedBox(height: AppSpacing.md),
 
                 /// Botón Login
                 PrimaryButton(
-                  text: "Iniciar Sesión",
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(
-                      context,
-                      AppRouter.onboardingIntro,
-                    );
-                  },
+                  text: appState.isLoading ? "Cargando..." : "Iniciar Sesión",
+                  onPressed: appState.isLoading ? null : () => _handleLogin(),
                 ),
 
                 const SizedBox(height: AppSpacing.sm),
@@ -128,8 +165,9 @@ class _LoginScreenState extends State<LoginScreen>
                 /// Olvidé contraseña
                 Center(
                   child: TextButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, AppRouter.forgotPassword),
+                    onPressed: appState.isLoading 
+                        ? null 
+                        : () => Navigator.pushNamed(context, AppRouter.forgotPassword),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         vertical: AppSpacing.sm,

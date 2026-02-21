@@ -1,11 +1,11 @@
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
+import { animate, stagger } from "animejs"
 import {
   Repeat,
   Bell,
   Users,
   Sparkles,
-  ChevronUp,
-  ChevronDown,
+  DollarSign,
 } from "lucide-react"
 
 // ─── Datos ───────────────────────────────────────────────────
@@ -45,9 +45,9 @@ const FEATURES = [
 ]
 
 const MOCK_USERS = [
-  { name: "Ana",    plan: "Premium" },
-  { name: "Luis",   plan: "Free" },
-  { name: "Sofía",  plan: "Premium" },
+  { name: "Ana", plan: "Premium" },
+  { name: "Luis", plan: "Free" },
+  { name: "Sofía", plan: "Premium" },
   { name: "Carlos", plan: "Free" },
 ]
 
@@ -61,6 +61,31 @@ export default function Freemium() {
     mascot: false,
   })
 
+  // Refs para animación
+  const headerRef = useRef(null)
+  const cardsRef = useRef(null)
+
+  useEffect(() => {
+    // Animación Header
+    animate(headerRef.current, {
+      translateY: [-20, 0],
+      opacity: [0, 1],
+      duration: 600,
+      easing: "easeOutExpo"
+    })
+
+    // Animación Cards (Stagger)
+    if (cardsRef.current) {
+      animate(cardsRef.current.children, {
+        translateY: [30, 0],
+        opacity: [0, 1],
+        delay: stagger(100, { start: 200 }),
+        duration: 800,
+        easing: "easeOutExpo"
+      })
+    }
+  }, [])
+
   const toggleFeature = (key) => {
     setFeatures((prev) => ({ ...prev, [key]: !prev[key] }))
   }
@@ -69,10 +94,12 @@ export default function Freemium() {
   const decrement = () => setTrialDays((d) => Math.max(1, Number(d) - 1))
 
   return (
-    <div className="bg-[var(--color-neutral-bg)] px-2 py-8">
-      <div className="mx-auto space-y-2">
-
-        {/* Header */}
+    <div className="mx-auto space-y-6">
+      {/* Header */}
+      <div ref={headerRef} className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-xl bg-[var(--color-yellow-light)] flex items-center justify-center">
+          <DollarSign size={18} className="text-[var(--color-yellow-dark)]" />
+        </div>
         <div>
           <h2 className="text-xl font-bold text-[var(--color-dark)] tracking-tight">
             Modelo Freemium
@@ -81,194 +108,133 @@ export default function Freemium() {
             Configura límites y funciones del plan gratuito
           </p>
         </div>
+      </div>
 
-        {/* Card: Período de prueba — fondo amarillo */}
-        <div className="max-w-lg mx-auto justify-left"> 
-        <div className="bg-[var(--color-yellow-light)] rounded-2xl border border-[var(--color-yellow)] shadow-sm overflow-hidden">
-          <div className="bg-[var(--color-yellow)] px-5 py-3 flex items-center gap-2">
-            <span className="text-sm">cambiar</span>
-            <h3 className="text-xs font-semibold text-[var(--color-dark)] uppercase tracking-widest">
-              Período de prueba
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 px-2 py-2">
+        {/* Card: Funciones Premium — fondo verde */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-[var(--color-green-light)] border-b border-[var(--color-green-dark)] px-5 py-3 flex items-center gap-2">
+            <Sparkles size={14} className="text-[var(--color-green-dark)]" />
+            <h3 className="text-xs font-semibold text-[var(--color-green-dark)] uppercase tracking-widest">
+              Funciones Premium
             </h3>
           </div>
 
-          <div className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-[var(--color-dark)]">Días de prueba</p>
-                <p className="text-xs text-[var(--color-gray-custom)] mt-0.5">
-                  Periodo inicial para usuarios nuevos
-                </p>
-              </div>
+          <div className="px-5">
+            {FEATURES.map((feature, i) => {
+              const Icon = feature.icon
+              const active = features[feature.key]
 
-              {/* Stepper */}
-              <div className="flex items-center border border-[var(--color-yellow)] rounded-xl overflow-hidden shadow-sm">
-                <button
-                  onClick={decrement}
-                  className="w-8 h-9 flex items-center justify-center bg-white text-[var(--color-dark)] hover:bg-[var(--color-yellow-light)] transition-colors duration-200"
-                >
-                  <ChevronDown size={15} />
-                </button>
-                <div className="flex items-center justify-center w-12 h-9 bg-[var(--color-yellow)] border-l border-r border-[var(--color-yellow)]">
-                  <span className="text-sm font-bold text-[var(--color-dark)]">{trialDays}</span>
-                </div>
-                <button
-                  onClick={increment}
-                  className="w-8 h-9 flex items-center justify-center bg-white text-[var(--color-dark)] hover:bg-[var(--color-yellow-light)] transition-colors duration-200"
-                >
-                  <ChevronUp size={15} />
-                </button>
-              </div>
-            </div>
-
-            {/* Barra de progreso */}
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-[var(--color-gray-custom)] mb-1.5">
-                <span>1 día</span>
-                <span className="font-semibold text-[var(--color-dark)]">{trialDays} día{trialDays !== 1 ? "s" : ""}</span>
-                <span>30 días</span>
-              </div>
-              <div className="w-full h-2 bg-white rounded-full overflow-hidden shadow-inner">
+              return (
                 <div
-                  className="h-full bg-[var(--color-yellow)] rounded-full transition-all duration-300"
-                  style={{ width: `${(trialDays / 30) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        </div>
+                  key={feature.key}
+                  className={`flex items-center justify-between py-4 ${i !== 0 ? "border-t border-gray-100" : ""}`}
+                >
+                  {/* Icono colorido + label */}
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-xl ${active ? feature.bg : "bg-[var(--color-neutral-bg)]"} flex items-center justify-center transition-colors duration-300`}>
+                      <Icon
+                        size={17}
+                        className={`transition-colors duration-300 ${active ? feature.iconColor : "text-[var(--color-gray-custom)]"}`}
+                      />
+                    </div>
+                    <p className="text-sm font-medium text-[var(--color-dark)]">{feature.label}</p>
+                  </div>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-5 px-2 py-2">
-  {/* Card: Funciones Premium — fondo verde */}
-  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-    <div className="bg-[var(--color-green-light)] border-b border-[var(--color-green-dark)] px-5 py-3 flex items-center gap-2">
-      <Sparkles size={14} className="text-[var(--color-green-dark)]" />
-      <h3 className="text-xs font-semibold text-[var(--color-green-dark)] uppercase tracking-widest">
-        Funciones Premium
-      </h3>
-    </div>
-
-    <div className="px-5">
-      {FEATURES.map((feature, i) => {
-        const Icon = feature.icon
-        const active = features[feature.key]
-
-        return (
-          <div
-            key={feature.key}
-            className={`flex items-center justify-between py-4 ${i !== 0 ? "border-t border-gray-100" : ""}`}
-          >
-            {/* Icono colorido + label */}
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-xl ${active ? feature.bg : "bg-[var(--color-neutral-bg)]"} flex items-center justify-center transition-colors duration-300`}>
-                <Icon
-                  size={17}
-                  className={`transition-colors duration-300 ${active ? feature.iconColor : "text-[var(--color-gray-custom)]"}`}
-                />
-              </div>
-              <p className="text-sm font-medium text-[var(--color-dark)]">{feature.label}</p>
-            </div>
-
-            {/* Toggle pill con color propio */}
-            <button
-              onClick={() => toggleFeature(feature.key)}
-              aria-label={`Toggle ${feature.label}`}
-              className={`
+                  {/* Toggle pill con color propio */}
+                  <button
+                    onClick={() => toggleFeature(feature.key)}
+                    aria-label={`Toggle ${feature.label}`}
+                    className={`
                 relative w-12 h-6 rounded-full transition-colors duration-300 ease-out
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-green-light)]
                 ${active ? feature.activeBg : "bg-gray-300"}
               `}
-            >
-              <span
-                className={`
+                  >
+                    <span
+                      className={`
                   absolute top-0.5 left-0.5
                   w-5 h-5 bg-white rounded-full shadow
                   transition-transform duration-300 ease-out
                   ${active ? "translate-x-6" : "translate-x-0"}
                 `}
-              />
-            </button>
+                    />
+                  </button>
+                </div>
+              )
+            })}
           </div>
-        )
-      })}
-    </div>
-  </div>
+        </div>
 
-  {/* Card: Tabla de usuarios — fondo azul suave */}
-  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden ">
-    <div className="bg-[var(--color-blue-light)] border-b border-[var(--color-blue-dark)] px-5 py-3 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <Users size={14} className="text-[var(--color-blue-dark)]" />
-        <h3 className="text-xs font-semibold text-[var(--color-blue-dark)] uppercase tracking-widest">
-          Usuarios
-        </h3>
-      </div>
-      <span className="text-xs font-semibold text-[var(--color-blue-dark)] bg-white px-2.5 py-0.5 rounded-full shadow-sm">
-        {MOCK_USERS.length} registrados
-      </span>
-    </div>
+        {/* Card: Tabla de usuarios — fondo azul suave */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden ">
+          <div className="bg-[var(--color-blue-light)] border-b border-[var(--color-blue-dark)] px-5 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Users size={14} className="text-[var(--color-blue-dark)]" />
+              <h3 className="text-xs font-semibold text-[var(--color-blue-dark)] uppercase tracking-widest">
+                Usuarios
+              </h3>
+            </div>
+            <span className="text-xs font-semibold text-[var(--color-blue-dark)] bg-white px-2.5 py-0.5 rounded-full shadow-sm">
+              {MOCK_USERS.length} registrados
+            </span>
+          </div>
 
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-100 bg-[var(--color-neutral-light)]">
-            <th className="text-left text-xs font-semibold text-[var(--color-gray-custom)] uppercase tracking-wider px-5 py-2.5">
-              Usuario
-            </th>
-            <th className="text-left text-xs font-semibold text-[var(--color-gray-custom)] uppercase tracking-wider px-5 py-2.5">
-              Plan
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {MOCK_USERS.map((user, i) => {
-            const isPremium = user.plan === "Premium"
-            return (
-              <tr
-                key={i}
-                className={`border-b border-gray-100 last:border-0 hover:bg-[var(--color-blue-light)] transition-colors duration-150 ${
-                  i % 2 === 0 ? "bg-white" : "bg-[var(--color-neutral-light)]"
-                }`}
-              >
-                <td className="px-5 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                        isPremium ? "bg-[var(--color-yellow-light)]" : "bg-[var(--color-blue-light)]"
-                      }`}
-                    >
-                      <span
-                        className={`text-xs font-bold ${
-                          isPremium ? "text-[var(--color-dark)]" : "text-[var(--color-blue-dark)]"
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100 bg-[var(--color-neutral-light)]">
+                  <th className="text-left text-xs font-semibold text-[var(--color-gray-custom)] uppercase tracking-wider px-5 py-2.5">
+                    Usuario
+                  </th>
+                  <th className="text-left text-xs font-semibold text-[var(--color-gray-custom)] uppercase tracking-wider px-5 py-2.5">
+                    Plan
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {MOCK_USERS.map((user, i) => {
+                  const isPremium = user.plan === "Premium"
+                  return (
+                    <tr
+                      key={i}
+                      className={`border-b border-gray-100 last:border-0 hover:bg-[var(--color-blue-light)] transition-colors duration-150 ${i % 2 === 0 ? "bg-white" : "bg-[var(--color-neutral-light)]"
                         }`}
-                      >
-                        {user.name[0]}
-                      </span>
-                    </div>
-                    <span className="text-sm font-medium text-[var(--color-dark)]">{user.name}</span>
-                  </div>
-                </td>
-                <td className="px-5 py-3">
-                  <span
-                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
-                      isPremium
-                        ? "bg-[var(--color-yellow-light)] text-[var(--color-dark)]"
-                        : "bg-[var(--color-green-light)] text-[var(--color-green-dark)]"
-                    }`}
-                  >
-                    {isPremium && <Sparkles size={10} />}
-                    {user.plan}
-                  </span>
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+                    >
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className={`w-7 h-7 rounded-full flex items-center justify-center ${isPremium ? "bg-[var(--color-yellow-light)]" : "bg-[var(--color-blue-light)]"
+                              }`}
+                          >
+                            <span
+                              className={`text-xs font-bold ${isPremium ? "text-[var(--color-dark)]" : "text-[var(--color-blue-dark)]"
+                                }`}
+                            >
+                              {user.name[0]}
+                            </span>
+                          </div>
+                          <span className="text-sm font-medium text-[var(--color-dark)]">{user.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3">
+                        <span
+                          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${isPremium
+                            ? "bg-[var(--color-yellow-light)] text-[var(--color-dark)]"
+                            : "bg-[var(--color-green-light)] text-[var(--color-green-dark)]"
+                            }`}
+                        >
+                          {isPremium && <Sparkles size={10} />}
+                          {user.plan}
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   )

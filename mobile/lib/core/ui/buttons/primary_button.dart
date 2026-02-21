@@ -3,7 +3,7 @@ import '../../theme/app_theme.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool outlined;
   final bool isLoading;
   final IconData? icon;
@@ -11,7 +11,7 @@ class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.outlined = false,
     this.isLoading = false,
     this.icon,
