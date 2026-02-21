@@ -8,7 +8,7 @@ export default function Settings() {
     recommendations: true,
     systemMessage: "",
   })
-  const [published, setPublished] = useState(false)
+  const [setPublished] = useState(false)
   const [toast, setToast] = useState(false)
 
   const headerRef = useRef(null)

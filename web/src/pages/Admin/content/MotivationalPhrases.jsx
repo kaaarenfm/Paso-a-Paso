@@ -11,7 +11,7 @@ const INITIAL_PHRASES = [
 export default function MotivationalPhrases() {
   const [phrases, setPhrases] = useState(INITIAL_PHRASES)
   const [confirmId, setConfirmId] = useState(null)
-  const [toast, setToast] = useState({ show: false, text: "", type: "success" })
+  const [toast] = useState({ show: false, text: "", type: "success" })
   const headerRef = useRef(null)
   const badgesRef = useRef(null)
   const listRef = useRef(null)

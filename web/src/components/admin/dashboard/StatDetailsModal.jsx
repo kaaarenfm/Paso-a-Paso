@@ -72,7 +72,7 @@ const ICONS = {
 export default function StatDetailsModal({ type, title, onClose }) {
     const modalRef = useRef(null)
     const contentRef = useRef(null)
-    const Icon = ICONS[type] || Users
+    const Icon = ICONS[type] || User
 
     useEffect(() => {
         animate(modalRef.current, {

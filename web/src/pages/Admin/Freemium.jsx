@@ -53,7 +53,6 @@ const MOCK_USERS = [
 
 // ─── Freemium ────────────────────────────────────────────────
 export default function Freemium() {
-  const [trialDays, setTrialDays] = useState(14)
   const [features, setFeatures] = useState({
     createRoutines: false,
     notifications: false,
@@ -89,9 +88,6 @@ export default function Freemium() {
   const toggleFeature = (key) => {
     setFeatures((prev) => ({ ...prev, [key]: !prev[key] }))
   }
-
-  const increment = () => setTrialDays((d) => Math.max(1, Number(d) + 1))
-  const decrement = () => setTrialDays((d) => Math.max(1, Number(d) - 1))
 
   return (
     <div className="mx-auto space-y-6">
